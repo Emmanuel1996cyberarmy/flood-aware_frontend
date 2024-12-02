@@ -47,7 +47,7 @@ const Home = () => {
           ))}
         </div>
 
-        <div className={`relative z-10 max-w-6xl mx-auto px-4 py-20 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`relative  max-w-6xl mx-auto px-4 py-20 transition-all duration-1000 ${isLoaded ? 'opacity-10 translate-y-0 lg:opacity-100' : 'opacity-0 translate-y-10'}`}>
           <h1 className="text-6xl font-bold text-blue-800 mb-6 text-center">
             Stay Safe with Flood Aware
           </h1>
