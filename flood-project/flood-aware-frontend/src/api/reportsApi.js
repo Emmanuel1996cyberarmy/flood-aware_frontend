@@ -5,7 +5,7 @@ export const getReports = async (page, limit, severity, status) => {
    // Create the query string with the filters
    const queryString = new URLSearchParams({
     page:page,
-    limit:page,
+    limit:limit,
     severity:severity,
     status:status
   }).toString();

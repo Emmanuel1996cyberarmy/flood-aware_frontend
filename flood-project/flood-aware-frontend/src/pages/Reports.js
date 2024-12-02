@@ -33,6 +33,7 @@ const Reports = () => {
         setLoading(true);
         const { page, limit, severity, status } = filters;
         const data = await getReports(page, limit, severity, status);
+        console.log(data, "getting reports")
         setReports(data.reports || []);
       } catch (error) {
         console.error("Error fetching reports:", error);
@@ -45,9 +46,9 @@ const Reports = () => {
   }, [filters]);
 
   const handleAddReport = async () => {
-    const { name, state, town, lga, date, description, severity, imageUrl, coordinates } = newReport;
+    const { name, state, town, lga, date,  severity, imageUrl, coordinates } = newReport;
 
-    if (!name || !state || !town || !lga || !date || !severity || !imageUrl) {
+    if (!name || !state || !town || !date || !severity || !imageUrl || !lga) {
       alert('All fields are required!');
       return;
     }
@@ -62,12 +63,14 @@ const Reports = () => {
         town: "",
         lga: "",
         date: "",
-        description: "",
+       
         severity: "",
         imageUrl: "",
         anonymous: false,
         coordinates: { lat: "", lng: "" },
       });
+
+      setShowModal(false);
     } catch (error) {
       console.error('Error adding report:', error);
       alert('Failed to add report. Please try again.');
@@ -212,91 +215,104 @@ const Reports = () => {
 
         {/* Modal for Report Creation */}
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg relative">
-              <button
-                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-lg text-red-500"
-                onClick={() => setShowModal(false)}
-              >
-                &times;
-              </button>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6">Create New Report</h2>
-              <div className="space-y-4">
-                {/* Form fields for new report */}
-                <div>
-                  <label className="block text-lg font-medium">Name</label>
-                  <input
-                    type="text"
-                    value={newReport.name}
-                    onChange={(e) => setNewReport({ ...newReport, name: e.target.value })}
-                    className="w-full p-3 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-xl w-11/12 max-w-md sm:max-w-lg relative">
+      <button
+        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl"
+        onClick={() => setShowModal(false)}
+      >
+        &times;
+      </button>
+      <h2 className="text-lg sm:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">
+        Create New Report
+      </h2>
+      <div className="space-y-4">
+        {/* Form fields for new report */}
+        <div>
+          <label className="block text-sm sm:text-base font-medium">Name</label>
+          <input
+            type="text"
+            value={newReport.name}
+            onChange={(e) => setNewReport({ ...newReport, name: e.target.value })}
+            className="w-full px-3 py-2 border rounded-md bg-white shadow-sm text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-                <div>
-                  <label className="block text-lg font-medium">State</label>
-                  <input
-                    type="text"
-                    value={newReport.state}
-                    onChange={(e) => setNewReport({ ...newReport, state: e.target.value })}
-                    className="w-full p-3 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+        <div>
+          <label className="block text-sm sm:text-base font-medium">State</label>
+          <input
+            type="text"
+            value={newReport.state}
+            onChange={(e) => setNewReport({ ...newReport, state: e.target.value })}
+            className="w-full px-3 py-2 border rounded-md bg-white shadow-sm text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-                <div>
-                  <label className="block text-lg font-medium">Town</label>
-                  <input
-                    type="text"
-                    value={newReport.town}
-                    onChange={(e) => setNewReport({ ...newReport, town: e.target.value })}
-                    className="w-full p-3 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+        <div>
+          <label className="block text-sm sm:text-base font-medium">Town</label>
+          <input
+            type="text"
+            value={newReport.town}
+            onChange={(e) => setNewReport({ ...newReport, town: e.target.value })}
+            className="w-full px-3 py-2 border rounded-md bg-white shadow-sm text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-                <div>
-                  <label className="block text-lg font-medium">Date</label>
-                  <input
-                    type="date"
-                    value={newReport.date}
-                    onChange={(e) => setNewReport({ ...newReport, date: e.target.value })}
-                    className="w-full p-3 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+        <div>
+          <label className="block text-sm sm:text-base font-medium">LGA</label>
+          <input
+            type="text"
+            value={newReport.lga}
+            onChange={(e) => setNewReport({ ...newReport, lga: e.target.value })}
+            className="w-full px-3 py-2 border rounded-md bg-white shadow-sm text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-                <div>
-                  <label className="block text-lg font-medium">Severity</label>
-                  <select
-                    value={newReport.severity}
-                    onChange={(e) => setNewReport({ ...newReport, severity: e.target.value })}
-                    className="w-full p-3 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="low">Low</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
+        <div>
+          <label className="block text-sm sm:text-base font-medium">Date</label>
+          <input
+            type="date"
+            value={newReport.date}
+            onChange={(e) => setNewReport({ ...newReport, date: e.target.value })}
+            className="w-full px-3 py-2 border rounded-md bg-white shadow-sm text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-                <div>
-                  <label className="block text-lg font-medium">Report Image</label>
-                  <input
-                    type="file"
-                    onChange={handleImageChange}
-                    className="w-full p-3 mt-2 border rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+        <div>
+          <label className="block text-sm sm:text-base font-medium">Severity</label>
+          <select
+            value={newReport.severity}
+            onChange={(e) => setNewReport({ ...newReport, severity: e.target.value })}
+            className="w-full px-3 py-2 border rounded-md bg-white shadow-sm text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="low">Low</option>
+            <option value="moderate">Moderate</option>
+            <option value="high">High</option>
+          </select>
+        </div>
 
-                <div>
-                  <button
-                    className="mt-6 w-full bg-blue-600 text-white p-3 rounded-lg shadow-md hover:bg-blue-700"
-                    onClick={handleAddReport}
-                  >
-                    Submit Report
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <div>
+          <label className="block text-sm sm:text-base font-medium">Report Image</label>
+          <input
+            type="file"
+            onChange={handleImageChange}
+            className="w-full px-3 py-2 border rounded-md bg-white shadow-sm text-sm sm:text-base focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <button
+            className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md text-sm sm:text-base hover:bg-blue-700"
+            onClick={handleAddReport}
+          >
+            Submit Report
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   );

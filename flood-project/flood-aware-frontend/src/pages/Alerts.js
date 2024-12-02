@@ -27,19 +27,40 @@ const AlertsPage = () => {
 
   const detectLocation = async () => {
     setLoadingLocation(true);
+  
+    const getBrowserLocation = () => 
+      new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          return reject('Geolocation is not supported by this browser.');
+        }
+        navigator.geolocation.getCurrentPosition(
+          ({ coords }) => resolve({ lat: coords.latitude, lon: coords.longitude }),
+          (error) => reject(error.message)
+        );
+      });
+  
     try {
+      // Attempt to get location using IP-based service
       const response = await axios.get(`https://ipinfo.io?token=${IPTOKEN}`);
-      console.log(response)
       const { city, region, loc } = response.data;
       const [lat, lon] = loc.split(',');
       setLocation({ city, region, lat, lon });
-    } catch (error) {
-      setLocation({ city: 'Unknown', region: 'Unknown', lat: null, lon: null });
-      console.error('Failed to fetch user location:', error.message);
+    } catch (ipError) {
+      console.warn('IP-based location detection failed. Falling back to browser geolocation:', ipError.message);
+  
+      try {
+        // Fallback to browser geolocation
+        const { lat, lon } = await getBrowserLocation();
+        setLocation({ city: 'Unknown', region: 'Unknown', lat, lon });
+      } catch (geoError) {
+        console.error('Browser geolocation failed:', geoError);
+        setLocation({ city: 'Unknown', region: 'Unknown', lat: null, lon: null });
+      }
     } finally {
       setLoadingLocation(false);
     }
   };
+  
 
   const fetchAlerts = async () => {
     if (!location.lat || !location.lon) {
@@ -134,7 +155,7 @@ const AlertsPage = () => {
         </div>
       ) : (
         <div className="text-center mb-6">
-          <p className="text-lg font-medium text-gray-700">
+          <p className="text-lg font-medium text-gray-700 blur">
            Your Location: {location.city}, {location.region}
           </p>
         </div>
