@@ -8,8 +8,8 @@ const Header = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('userId'); // Clear user ID
-        navigate('/'); // Redirect to home
+        localStorage.removeItem('userId'); 
+        navigate('/'); 
       };
       const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -29,7 +29,7 @@ const Header = () => {
 }}>
   <img 
     src={globeImage} 
-    alt="globe" 
+    alt="globe image" 
     style={{
       width: '100%', 
       height: '100%', 
